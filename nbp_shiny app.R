@@ -14,21 +14,28 @@ library(shinythemes)
 library(tidyverse)
 library(sf)
 library(ggplot2)
+library(ggthemes)
 library(ggiraph)
 library(ggspatial)
 
 ##---- Data --------------------------------------------------------------------
-df_admin <- st_read("world-administrative-boundaries.shp")
-df_cshapes_annual <- st_read("cshapes_annual.geojson")
+#df_admin <- st_read("world-administrative-boundaries.shp")
+#df_cshapes_annual <- st_read("cshapes_annual.geojson")
+
+df_map <- st_read("nbp_map_data.geojson")
+
+df_map <- df_map %>%
+  mutate(Monolingual = as.factor(Monolingual),
+         MonolingualStrict = as.factor(MonolingualStrict))
 
 ggplot() +
-  geom_sf(data = df_cshapes_annual %>%
-            filter(year == 1962)) + 
-  annotation_scale(location = "bl", width_hint = 0.3) +
-  annotation_north_arrow(location = "bl", which_north = "true", 
-                         pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
-                         style = north_arrow_fancy_orienteering) +
-  theme_minimal()
+  geom_sf(data = df_map %>%
+            filter(year == 1962), aes(fill = Monolingual)) + 
+#  annotation_scale(location = "bl", width_hint = 0.3) +
+#  annotation_north_arrow(location = "bl", which_north = "true", 
+#                         pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
+#                         style = north_arrow_fancy_orienteering) +
+  theme_map()
 
 ##---- APP ---------------------------------------------------------------------
 
@@ -49,6 +56,7 @@ ui <- fluidPage(
                         sidebarLayout(
                           sidebarPanel(
                             selectInput("year", "Select Year:", choices = c(1945:2020), selected = 2000),
+                            selectInput("mapvar", "Select Variable:", choices = names(df_map), selected = "HI"),
                             width = 3
                         ),
                         mainPanel(
@@ -90,13 +98,13 @@ ui <- fluidPage(
 # Define server logic
 server <- function(input, output) {
   output$world_map_plot <- renderGirafe({
-    map <- ggplot(data = df_cshapes_annual %>% filter(year == input$year)) +
-      geom_sf_interactive(aes(geometry = geometry, tooltip = cntry_name)) +
+    map <- ggplot(data = df_map %>% filter(year == input$year)) +
+      geom_sf_interactive(aes(fill = input$mapvar, geometry = geometry, tooltip = cntry_name)) +
 #      annotation_scale(location = "bl", width_hint = 0.3) +
 #      annotation_north_arrow(location = "bl", which_north = "true", 
 #                             pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
 #                             style = north_arrow_fancy_orienteering) +
-      theme_minimal() +
+      theme_map() +
       theme(
         #plot.margin = margin(5, 5, 5, 5), 
         plot.title = element_blank()  
