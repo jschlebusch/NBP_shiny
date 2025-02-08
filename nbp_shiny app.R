@@ -51,8 +51,8 @@ ui <- fluidPage(
              ),
              tabPanel("World Map",
                       fluidRow(
-                        column(12, h3("Page 2")),
-                        column(12, p("Content for Page 2.")),
+                        column(12, h3("Nation-Building Policies Around the World")),
+                        column(12, p("Select a year and a variable to explore how states built nations!")),
                         sidebarLayout(
                           sidebarPanel(
                             selectInput("year", "Select Year:", choices = c(1945:2020), selected = 2000),
@@ -99,7 +99,7 @@ ui <- fluidPage(
 server <- function(input, output) {
   output$world_map_plot <- renderGirafe({
     map <- ggplot(data = df_map %>% filter(year == input$year)) +
-      geom_sf_interactive(aes(fill = input$mapvar, geometry = geometry, tooltip = cntry_name)) +
+      geom_sf_interactive(aes(fill = .data[[input$mapvar]], geometry = geometry, tooltip = cntry_name)) +
 #      annotation_scale(location = "bl", width_hint = 0.3) +
 #      annotation_north_arrow(location = "bl", which_north = "true", 
 #                             pad_x = unit(0.75, "in"), pad_y = unit(0.5, "in"),
