@@ -80,7 +80,17 @@ ui <- fluidPage(
              tabPanel("Countries",
                       fluidRow(
                         column(12, h3("Page 3")),
-                        column(12, p("Content for Page 3."))
+                        column(12, p("Content for Page 3.")),
+                        sidebarLayout(
+                          sidebarPanel(
+                            selectInput("country", "Select Country", choices = unique(df_map$Country)),
+                            selectInput("cyear", "Select Year", choices = NULL),
+                            selectInput("cygroup", "Select Group", choices = NULL) ## here groups in selected country year; need to update data first
+                          ),
+                          mainPanel(
+                            plotOutput("cmap") ## below country map filled with INCLUSION INDEX table with value for dummy vars for selected group in shown country year
+                          )
+                        )
                       )
              )
   ),
@@ -96,7 +106,7 @@ ui <- fluidPage(
 
 
 # Define server logic
-server <- function(input, output) {
+server <- function(input, output, session) {
   output$world_map_plot <- renderGirafe({
     map <- ggplot(data = df_map %>% filter(year == input$year)) +
       geom_sf_interactive(aes(fill = .data[[input$mapvar]], geometry = geometry, tooltip = cntry_name)) +
@@ -112,6 +122,28 @@ server <- function(input, output) {
     
     girafe(ggobj = map)
   })
+  # only years for which we include country to be selected
+  observeEvent(input$country, {
+    available_years <- unique(df_map$year[df_map$Country == input$country])
+    updateSelectInput(session, "cyear", choices = available_years, selected = available_years[1])
+  })
+  #filter reactive for country and year
+  filtered_data <- reactive({
+    req(input$country, input$cyear)  # Ensure both inputs are selected
+    df_map[df_map$Country == input$country & df_map$year == input$cyear, ]
+  })
+  
+  output$cmap <- renderPlot({
+    data <- filtered_data()
+    
+    if (nrow(data) == 0) return(NULL)  
+    
+    ggplot(data) +
+      geom_sf(aes(fill = HI)) +  
+      theme_map() +
+      ggtitle(paste("Map of", input$country, "in", input$cyear))
+  })
+  
 }
 
 # Run the app
