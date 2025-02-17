@@ -55,9 +55,20 @@ ui <- fluidPage(
   titlePanel(markdown("# **Ethnicgoods NBP**")),
   navbarPage(HTML('<span style="font-size: 30px; font-weight: bold;">MENU</span>'),
              tabPanel("HOME",
-                      fluidRow(
-                        column(12, h3("Page 1")),
-                        column(12, p("e.g., Introduction here"))
+                      fluidPage(
+                        verticalLayout(
+                          markdown("## **The ETHNICGOODS Nation-Building Policies Dataset**
+                                   
+                                   ETHNICGOODS is a five-year research project funded by a European Research Council (ERC) Consolidator Grant.
+                                   It is hosted by the Institut Barcelona d’Estudis Internacionals and led by Dr Matthias vom Hau.
+                                   
+                                   ### The Aim
+                                   Modern nation-states inevitably confront how to define national membership and regulate ethnic differences.
+                                   Our goal is to map historical variations in nation-building policies and identify their unique consequences for a variety of substantive outcomes, including ethnic diversity, public service provision, and conflict.
+                                   Based on this historical perspective, we will provide new evidence on the relationship between ethnic heterogeneity and development.
+                                   
+                                   To find out more, please visit the project's [website](https://ethnicgoods.org/)")
+                        )
                       )
              ),
              tabPanel("World Map",
