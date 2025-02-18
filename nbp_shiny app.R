@@ -72,9 +72,8 @@ ui <- fluidPage(
                       )
              ),
              tabPanel("World Map",
-                      fluidRow(
-                        column(12, h3("Nation-Building Policies Around the World")),
-                        column(12, p("Select a year and a variable to explore how states built nations!")),
+                      fluidPage(
+                        markdown("text text text"),
                         sidebarLayout(
                           sidebarPanel(
                             selectInput("year", "Select Year:", choices = c(1945:2020), selected = 2000),
@@ -121,8 +120,8 @@ ui <- fluidPage(
                         sidebarPanel(
                           selectInput("index", "Select Index", choices = c("HI")),
                           selectInput("indexcountry", "Select Country", choices = unique(df_map$Country)),
-                          sliderInput("syear", "From:", min = 1945, max = 2020, step = 1, sep = "", value = 1945),
-                          sliderInput("eyear", "To:", min = 1945, max = 2020, step = 1, sep = "", value = 2020)
+                          sliderInput("syear", "From:", min = 1945, max = 2020, sep = "", value = 1945, step = TRUE),
+                          sliderInput("eyear", "To:", min = 1945, max = 2020, sep = "", value = 2020, step = TRUE)
                         ),
                         mainPanel(
                           plotOutput("indexPlot")
